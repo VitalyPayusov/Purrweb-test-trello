@@ -15,16 +15,18 @@ const class_validator_1 = require("class-validator");
 class ColumnDto {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Column', description: 'Column name' }),
+    (0, swagger_1.ApiProperty)({ example: 'Name column', description: 'name' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(30),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(20),
     __metadata("design:type", String)
 ], ColumnDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Column description', description: 'Column description' }),
+    (0, swagger_1.ApiProperty)({ example: 'Description column',
+        description: 'description' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Max)(300),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], ColumnDto.prototype, "description", void 0);
 exports.ColumnDto = ColumnDto;

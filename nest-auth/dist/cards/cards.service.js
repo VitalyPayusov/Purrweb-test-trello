@@ -17,42 +17,60 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const cards_entity_1 = require("./cards.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const columns_entity_1 = require("../columns/columns.entity");
 let CardsService = class CardsService {
-    constructor(cardsService) {
-        this.cardsService = cardsService;
+    constructor(cardsRepository, columnsRepository) {
+        this.cardsRepository = cardsRepository;
+        this.columnsRepository = columnsRepository;
     }
-    async createCard(dto, columnId) {
-        const obj = {
-            name: dto.name,
-            description: dto.description,
-            result: dto.result,
-            columnId: columnId,
-        };
-        const card = this.cardsService.create(obj);
+    async createCard(dto) {
+        const card = this.cardsRepository.create(dto);
+        await this.cardsRepository.save(card);
+        console.log(dto);
+        console.log(card);
         return card;
     }
     async getCard(id) {
-        const card = await this.cardsService.findOne({ where: { cardId: id } });
-        return card;
+        return await this.cardsRepository.findOne({ id });
     }
-    async getCards(id) {
-        const card = await this.cardsService.find({ where: { columnId: id } });
-        return card;
+    async getCards(columnId, userId) {
+        try {
+            const where = {};
+            if (!columnId && userId) {
+                const columns = await this.columnsRepository.find({ userId });
+                where.columnId = (0, typeorm_1.In)(columns.map(col => col.id));
+            }
+            else if (columnId) {
+                where.columnId = columnId;
+            }
+            else {
+                throw new common_1.BadRequestException();
+            }
+            const cards = await this.cardsRepository.find({ where });
+            return cards;
+        }
+        catch (e) {
+            throw new common_1.BadRequestException('Cards not found');
+        }
     }
     async updateCard(id, dto) {
-        return await this.cardsService.save(Object.assign(Object.assign({}, dto), { where: { cardId: id } }));
+        const card = await this.getCard(id);
+        console.log(id);
+        console.log(dto);
+        console.log(id);
+        return this.cardsRepository.save(Object.assign(Object.assign({}, card), dto));
     }
     async deleteCard(id) {
-        return await this.cardsService.remove(await this.cardsService.findOne(id));
-    }
-    findOne(condition) {
-        return this.cardsService.findOne(condition);
+        const card = await this.getCard(id);
+        return await this.cardsRepository.remove(card);
     }
 };
 CardsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(cards_entity_1.Cards)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __param(1, (0, typeorm_2.InjectRepository)(columns_entity_1.Columns)),
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        typeorm_1.Repository])
 ], CardsService);
 exports.CardsService = CardsService;
 //# sourceMappingURL=cards.service.js.map

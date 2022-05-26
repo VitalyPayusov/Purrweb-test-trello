@@ -11,6 +11,7 @@ async function bootstrap() {
         .setTitle('Trello')
         .setDescription('RESTful API with authorization for trello (trello.com) on nestjs')
         .setVersion('1.0')
+        .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' }, 'access_token')
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api', app, document);

@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Cards = void 0;
+const comments_entity_1 = require("../comments/comments.entity");
 const typeorm_1 = require("typeorm");
 const columns_entity_1 = require("../columns/columns.entity");
 let Cards = class Cards {
@@ -23,9 +24,18 @@ __decorate([
     __metadata("design:type", String)
 ], Cards.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => columns_entity_1.Columns, (columns) => columns.id),
+    (0, typeorm_1.ManyToOne)(type => columns_entity_1.Columns, column => column.id),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", columns_entity_1.Columns)
-], Cards.prototype, "parent", void 0);
+], Cards.prototype, "column", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Cards.prototype, "columnId", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(type => comments_entity_1.Comments, comment => comment.cardId),
+    __metadata("design:type", Array)
+], Cards.prototype, "comment", void 0);
 Cards = __decorate([
     (0, typeorm_1.Entity)('cards')
 ], Cards);

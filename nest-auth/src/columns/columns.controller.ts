@@ -1,81 +1,82 @@
-import {Controller, UseGuards, Get, Param, ParseIntPipe, Delete, Post, Body, Patch, BadRequestException} from "@nestjs/common";
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Param,
+  ParseIntPipe,
+  Delete,
+  Post,
+  Body,
+  Patch,
+} from "@nestjs/common";
 import {ColumnsService} from "./columns.service";
 import {JwtAuthGuard} from "../auth/guards/jwt.guard";
 import {Columns} from "./columns.entity";
-import {ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import { ColumnDto } from "src/columns/dto/columns.dto";
-import { AccessGuard } from "src/auth/guards/acess.guard";
-import { UsersService } from "src/users/users.service";
-import { UserId } from "src/users/decorator";
+import {
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags
+} from "@nestjs/swagger";
+import {ColumnDto} from "src/columns/dto/columns.dto";
+import {User} from "src/users/decorator";
+import {Users} from "../users/users.entity";
+import {IsColumnOwnerGuard} from "./is-column-owner.guard";
 
 @ApiTags('Columns')
-@Controller('users')
+@Controller('columns')
+@ApiBearerAuth('access_token')
 export class ColumnsController {
-  constructor(private readonly columnsService: ColumnsService,
-    private usersService: UsersService) {
+  constructor(private readonly columnsService: ColumnsService) {
   }
 
-  @Post('columns')
+  @Post()
   @ApiOperation({summary: 'Create column'})
   @ApiResponse({status: 201, type: Columns})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async create(@Body() dto: ColumnDto, @UserId('userId') userId) {
-    return await this.columnsService.createColumn(dto, userId)
-}
+  @UseGuards(JwtAuthGuard)
+  async createColumn(@Body() dto: ColumnDto, @User() userId: Users) {
+    return this.columnsService.createColumn(userId.id, dto);
+  }
 
-  @Get(':userId/columns/:columnId')
+  @Get(':id')
   @ApiOperation({summary: 'Get column'})
   @ApiResponse({status: 200, type: Columns})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async getColumn(@Param('userId') userId: number, @Param('columnId') columnId: number) {
-    const user = await this.usersService.getUser(userId);
-    if ( !user ) {
-        throw new BadRequestException('User not found');
-    } 
-    return await this.columnsService.getColumn(columnId);
-}
+  @UseGuards(JwtAuthGuard, IsColumnOwnerGuard)
+  async getColumn(@Param('id') id: number) {
+    return this.columnsService.getColumn(id);
+  }
 
-  @Get(':userId/columns')
+  @Get()
   @ApiOperation({summary: 'Get columns'})
   @ApiResponse({status: 200, type: Columns})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async getColumns(@Param('userId') userId: number) {
-    const user = await this.usersService.getUser(userId)
-    if( !user ) {
-      throw new BadRequestException('User not found');
+  @UseGuards(JwtAuthGuard)
+  async getColumns(@User() user: Users) {
+    return this.columnsService.getColumns(user.id);
   }
-    return this.columnsService.getColumns(userId);
-  }
-    
-  @Patch('columns/:columnId')
+
+  @Patch(':id')
   @ApiOperation({summary: 'Update column'})
   @ApiResponse({status: 200, type: Columns})
   @ApiNotFoundResponse({description: 'Not found'})
   @ApiForbiddenResponse({description: 'Forbidden'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async updateColumn(@Param('userId') userId: number, @Param('columnId') columnId: any, @Body() dto: ColumnDto){
-    const user = await this.usersService.getUser(userId);
-    if ( !user ) {
-        throw new BadRequestException('User not found');
-    } 
-    return await this.columnsService.updateColumn(dto, columnId);
-}
-    
-  @Delete('columns/:columnId')
+  @UseGuards(JwtAuthGuard, IsColumnOwnerGuard)
+  async updateColumn(@Param('id') id: number, @Body() dto: ColumnDto) {
+    return this.columnsService.updateColumn(id, dto);
+  }
+
+  @Delete(':id')
   @ApiOperation({summary: 'Delete column'})
   @ApiResponse({status: 200, type: Columns})
   @ApiNotFoundResponse({description: 'Not found'})
   @ApiForbiddenResponse({description: 'Forbidden'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async deleteColumn(@Param('userId') userId: number, @Param('columnId') columnId: any, @Body() dto: ColumnDto){
-    const user = await this.usersService.getUser(userId);
-    if ( !user ) {
-        throw new BadRequestException('User not found');
-    } 
-    return await this.columnsService.updateColumn(dto, columnId);
-}
+  @UseGuards(JwtAuthGuard, IsColumnOwnerGuard)
+  async deleteColumn(@Param('id') id: number) {
+    return await this.columnsService.deleteColumn(id);
+  }
 
 }

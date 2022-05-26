@@ -18,22 +18,37 @@ const typeorm_1 = require("typeorm");
 const comments_entity_1 = require("./comments.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 let CommentsService = class CommentsService {
-    constructor(commentsService) {
-        this.commentsService = commentsService;
+    constructor(commentsRepository) {
+        this.commentsRepository = commentsRepository;
     }
-    async createComment(text, userId, cardId) {
-        const obj = {
-            text: text,
-            userId: userId,
-            cardId: cardId,
-        };
-        return this.commentsService.create(obj);
+    async createComment(dto) {
+        const comment = this.commentsRepository.create(dto);
+        await this.commentsRepository.save(comment);
+        console.log(dto);
+        console.log(comment);
+        return comment;
+    }
+    async getComment(id) {
+        return await this.commentsRepository.findOne({ id });
     }
     async getComments(cardId) {
-        return await this.commentsService.find({ where: { cardId: cardId } });
+        console.log('service cardId - ', cardId);
+        return await this.commentsRepository.find({ where: {
+                card: {
+                    id: cardId
+                }
+            } });
+    }
+    async updateComment(id, dto) {
+        const comment = await this.getComment(id);
+        console.log(id);
+        console.log(dto);
+        console.log(id);
+        return this.commentsRepository.save(Object.assign(Object.assign({}, comment), dto));
     }
     async deleteComment(id) {
-        return await this.commentsRepository.destroy({ where: { comment_id: id } });
+        const comment = await this.getComment(id);
+        return await this.commentsRepository.remove(comment);
     }
 };
 CommentsService = __decorate([

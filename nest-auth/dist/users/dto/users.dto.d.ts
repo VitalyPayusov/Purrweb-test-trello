@@ -1,4 +1,5 @@
 export declare class UserDto {
-    readonly email: string;
-    readonly password: string;
+    readonly email: any;
+    readonly password: any;
+    constructor(model?: any);
 }

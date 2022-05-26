@@ -23,9 +23,9 @@ AppModule = __decorate([
         imports: [
             users_module_1.UsersModule,
             columns_module_1.ColumnsModule,
+            auth_module_1.AuthModule,
             cards_module_1.CardsModule,
             comments_module_1.CommentsModule,
-            auth_module_1.AuthModule,
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
                 host: 'dev.it-svoboda.ru',

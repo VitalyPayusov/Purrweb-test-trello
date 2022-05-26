@@ -1,48 +1,45 @@
-import {BadRequestException, Injectable} from "@nestjs/common";
+import {Injectable} from "@nestjs/common";
 import {Repository} from "typeorm";
 import {Users} from "./users.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import { UserDto } from "src/users/dto/users.dto";
+import { UpdateUserDto } from "./dto/update.users.dto";
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(Users) private usersService: Repository<Users>) {
+  constructor(@InjectRepository(Users) private usersRepository: Repository<Users>) {
   }
 
   async createUser(dto: UserDto): Promise<Users> {
-    const user = this.usersService.create(dto);
-    this.usersService.save(user);
+    const user = this.usersRepository.create(dto);
+    await this.usersRepository.save(user);
     return await this.userEmail(user.email);
 }
 
-  async getUser(id: any): Promise<Users> {
-    try {
-      return await this.usersService.findOne(id);
-     
-    } catch(e) {
-      throw new BadRequestException('User not found')
-    }
+  async getUser(id: number): Promise<Users> {
+      const user = await this.usersRepository.findOne(id);
+      return user;
   }
 
   getUsers(): Promise<Users[]> {
-    return this.usersService.find();
+    return this.usersRepository.find();
   }
 
-  async updateUser(id: any, dto: UserDto ): Promise<Users> {
-    const user = await this.getUser(id);
-    return await this.usersService.save({...user, dto});
+  async updateUser(id: any, dto: UpdateUserDto): Promise<Users> {
+    const user = await this.getUser(id)
+    return this.usersRepository.save({...user, ...dto});
   }
 
   async deleteUser(id: any): Promise<Users> {
-    return await this.usersService.remove(await this.usersService.findOne(id));
+    return await this.usersRepository.remove(await this.usersRepository.findOne(id));
   }
 
-   findOne(condition: any): Promise<Users> {
-     return this.usersService.findOne(condition);
-   }
+  //  findOne(condition: any): Promise<Users> {
+  //    return this.usersRepository.findOne(condition);
+  //  }
 
    async userEmail(email: string): Promise<Users> {
-    return await this.usersService.findOne({ where: { email } })
+    return await this.usersRepository.findOne({ where: { email } })
 }
 
 }

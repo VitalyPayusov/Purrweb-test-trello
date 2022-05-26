@@ -25,9 +25,14 @@ __decorate([
     __metadata("design:type", String)
 ], Comments.prototype, "text", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)((type) => cards_entity_1.Cards, (cards) => cards.id),
+    (0, typeorm_1.ManyToOne)(type => cards_entity_1.Cards, card => card.id),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", cards_entity_1.Cards)
-], Comments.prototype, "parent", void 0);
+], Comments.prototype, "card", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Comments.prototype, "cardId", void 0);
 Comments = __decorate([
     (0, typeorm_1.Entity)('comments')
 ], Comments);

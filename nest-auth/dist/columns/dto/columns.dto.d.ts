@@ -1,4 +1,4 @@
 export declare class ColumnDto {
-    name: string;
-    description: string;
+    readonly name: string;
+    readonly description?: string;
 }

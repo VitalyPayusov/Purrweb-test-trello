@@ -17,24 +17,22 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const columns_entity_1 = require("./columns.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const users_service_1 = require("../users/users.service");
 let ColumnsService = class ColumnsService {
-    constructor(columnsService, usersService) {
-        this.columnsService = columnsService;
-        this.usersService = usersService;
+    constructor(columnsRepository) {
+        this.columnsRepository = columnsRepository;
     }
-    async createColumn(dto, userId) {
+    async createColumn(userId, dto) {
         const obj = {
             name: dto.name,
-            description: dto.description,
-            userId: userId,
+            userId,
         };
-        const column = this.columnsService.create(obj);
+        const column = this.columnsRepository.create(obj);
+        await this.columnsRepository.save(column);
         return column;
     }
     async getColumn(id) {
         try {
-            const column = this.columnsService.findOne({ where: { columnId: id } });
+            const column = await this.columnsRepository.findOne({ where: { id: id } });
             return column;
         }
         catch (e) {
@@ -43,7 +41,7 @@ let ColumnsService = class ColumnsService {
     }
     async getColumns(userId) {
         try {
-            const columns = await this.columnsService.find({ where: { userId: userId } });
+            const columns = await this.columnsRepository.find({ where: { userId: userId } });
             return columns;
         }
         catch (e) {
@@ -51,17 +49,18 @@ let ColumnsService = class ColumnsService {
         }
     }
     async updateColumn(id, dto) {
-        return await this.columnsService.save(Object.assign(Object.assign({}, dto), { where: { columnId: id } }));
+        const column = await this.getColumn(id);
+        return this.columnsRepository.save(Object.assign(Object.assign({}, column), dto));
     }
     async deleteColumn(id) {
-        return await this.columnsService.remove(await this.columnsService.findOne(id));
+        const column = await this.getColumn(id);
+        return await this.columnsRepository.remove(column);
     }
 };
 ColumnsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(columns_entity_1.Columns)),
-    __metadata("design:paramtypes", [typeorm_1.Repository,
-        users_service_1.UsersService])
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], ColumnsService);
 exports.ColumnsService = ColumnsService;
 //# sourceMappingURL=columns.service.js.map

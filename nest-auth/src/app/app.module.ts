@@ -12,16 +12,16 @@ import { CommentsModule } from 'src/comments/comments.module';
   imports: [
     UsersModule,
     ColumnsModule,
+    AuthModule,
     CardsModule,
     CommentsModule,
-    AuthModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'host',
       port: 3306,
-      username: 'vitaliy',
-      password: 'vitaliy',
-      database: 'vitaliy',
+      username: 'username',
+      password: 'password',
+      database: 'database',
       entities: [],
       synchronize: true,
       autoLoadEntities: true,
@@ -29,6 +29,6 @@ import { CommentsModule } from 'src/comments/comments.module';
   ],
 })
 export class AppModule {
-  
+
 }
 

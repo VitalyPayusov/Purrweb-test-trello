@@ -18,103 +18,102 @@ const comments_service_1 = require("./comments.service");
 const jwt_guard_1 = require("../auth/guards/jwt.guard");
 const comments_entity_1 = require("./comments.entity");
 const swagger_1 = require("@nestjs/swagger");
-const acess_guard_1 = require("../auth/guards/acess.guard");
 const decorator_1 = require("../users/decorator");
 const columns_service_1 = require("../columns/columns.service");
-const cards_service_1 = require("../cards/cards.service");
 const users_service_1 = require("../users/users.service");
+const users_entity_1 = require("../users/users.entity");
+const comments_dto_1 = require("./dto/comments.dto");
+const update_comments_dto_1 = require("./dto/update.comments.dto");
 let CommentsController = class CommentsController {
-    constructor(commentsService, columnsService, cardsService, usersService) {
+    constructor(commentsService, columnsService, usersService) {
         this.commentsService = commentsService;
         this.columnsService = columnsService;
-        this.cardsService = cardsService;
         this.usersService = usersService;
     }
-    async createComment(text, userId, columnId, cardId) {
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return await this.commentsService.createComment(text, userId, columnId);
+    async createComment(dto) {
+        return this.commentsService.createComment(dto);
     }
-    async getComment(userId, columnId, cardId) {
-        const user = await this.usersService.getUser(userId);
-        if (!user) {
-            throw new common_1.BadRequestException('User not found');
-        }
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return await this.commentsService.getComments(cardId);
+    async getComment(id) {
+        return await this.commentsService.getComment(id);
     }
-    async deleteComment(columnId, cardId, commentId) {
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return await this.commentsService.deleteComment(commentId);
+    async getComments(cardId, user) {
+        console.log('controller cardId - ', cardId);
+        return this.commentsService.getComments(cardId);
+    }
+    async updateComment(id, dto) {
+        console.log(id);
+        console.log(dto);
+        return this.commentsService.updateComment(id, dto);
+    }
+    async deleteComment(id) {
+        return await this.commentsService.deleteComment(id);
     }
 };
 __decorate([
-    (0, common_1.Post)('columns/:columnId/cards/:cardId/comments'),
+    (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create comment' }),
     (0, swagger_1.ApiResponse)({ status: 201, type: comments_entity_1.Comments }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Body)("text")),
-    __param(1, (0, decorator_1.UserId)()),
-    __param(2, (0, common_1.Param)('columnId')),
-    __param(3, (0, common_1.Param)('cardId')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, Number, Number]),
+    __metadata("design:paramtypes", [comments_dto_1.CommentDto]),
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "createComment", null);
 __decorate([
-    (0, common_1.Get)(':userId/columns/:columnId/cards/:cardId/comments'),
+    (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get comment' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: comments_entity_1.Comments }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('userId')),
-    __param(1, (0, common_1.Param)('columnId')),
-    __param(2, (0, common_1.Param)('cardId')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, Number]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "getComment", null);
 __decorate([
-    (0, common_1.Delete)('columns/:columnId/cards/:cardId/comments/:commentId'),
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get comments' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: comments_entity_1.Comments }),
+    (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Query)('cardId', common_1.ParseIntPipe)),
+    __param(1, (0, decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, users_entity_1.Users]),
+    __metadata("design:returntype", Promise)
+], CommentsController.prototype, "getComments", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update comment' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: comments_entity_1.Comments }),
+    (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
+    (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_comments_dto_1.UpdateCommentDto]),
+    __metadata("design:returntype", Promise)
+], CommentsController.prototype, "updateComment", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete comment' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: comments_entity_1.Comments }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('columnId')),
-    __param(1, (0, common_1.Param)('cardId')),
-    __param(2, (0, common_1.Param)('commentId')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, Number]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CommentsController.prototype, "deleteComment", null);
 CommentsController = __decorate([
     (0, swagger_1.ApiTags)('Comments'),
-    (0, common_1.Controller)('users'),
+    (0, common_1.Controller)('comments'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     __metadata("design:paramtypes", [comments_service_1.CommentsService,
         columns_service_1.ColumnsService,
-        cards_service_1.CardsService,
         users_service_1.UsersService])
 ], CommentsController);
 exports.CommentsController = CommentsController;

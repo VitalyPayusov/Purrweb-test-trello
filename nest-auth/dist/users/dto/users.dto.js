@@ -13,17 +13,21 @@ exports.UserDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 class UserDto {
+    constructor(model = {}) {
+        this.email = model.email;
+        this.password = model.password;
+    }
 }
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'example@email.com', description: 'Email' }),
     (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], UserDto.prototype, "email", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: '1234Abcd.', description: 'Password' }),
     (0, class_validator_1.Length)(8, 14),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Object)
 ], UserDto.prototype, "password", void 0);
 exports.UserDto = UserDto;
 //# sourceMappingURL=users.dto.js.map

@@ -1,21 +1,24 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, Max, Min } from "class-validator";
+import {IsDefined, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength} from "class-validator";
 
 export class CardDto {
-    
-    @ApiProperty({example: 'Card', description: 'Card name'})
-    @IsString()
-    @Min(1)
-    @Max(30)
-    name: string;
-    
-    @ApiProperty({example: 'Card description', description: 'Card description'})
-    @IsString()
-    @Max(300)
-    description: string;
+    @ApiProperty({ example: 4, description: 'Parent column ID' })
+    @IsNumber()
+    @IsDefined()
+    readonly columnId: number;
 
-    @ApiProperty({example: 'Result', description: 'Card result'})
+    @ApiProperty({example: 'Name card', description: 'name'})
     @IsString()
-    @Max(30)
-    result: string;
+    @IsNotEmpty()
+    @MaxLength(20)
+    readonly name: string;
+
+    @ApiProperty(
+        {example: 'Description card',
+        description: 'description'}
+     )
+    @IsString()
+    @IsOptional()
+    @MaxLength(100)
+    readonly description?: string;
 }

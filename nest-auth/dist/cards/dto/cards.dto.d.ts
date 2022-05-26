@@ -1,5 +1,5 @@
 export declare class CardDto {
-    name: string;
-    description: string;
-    result: string;
+    readonly columnId: number;
+    readonly name: string;
+    readonly description?: string;
 }

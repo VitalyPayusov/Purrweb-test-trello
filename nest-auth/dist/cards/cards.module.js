@@ -10,23 +10,21 @@ exports.CardsModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const auth_module_1 = require("../auth/auth.module");
-const columns_module_1 = require("../columns/columns.module");
-const users_module_1 = require("../users/users.module");
 const cards_controller_1 = require("./cards.controller");
 const cards_entity_1 = require("./cards.entity");
 const cards_service_1 = require("./cards.service");
+const columns_entity_1 = require("../columns/columns.entity");
+const is_card_owner_guard_1 = require("./is-card-owner.guard");
 let CardsModule = class CardsModule {
 };
 CardsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            users_module_1.UsersModule,
-            columns_module_1.ColumnsModule,
             auth_module_1.AuthModule,
-            typeorm_1.TypeOrmModule.forFeature([cards_entity_1.Cards]),
+            typeorm_1.TypeOrmModule.forFeature([cards_entity_1.Cards, columns_entity_1.Columns]),
         ],
         controllers: [cards_controller_1.CardsController],
-        providers: [cards_service_1.CardsService],
+        providers: [cards_service_1.CardsService, is_card_owner_guard_1.IsCardOwnerGuard],
         exports: [cards_service_1.CardsService]
     })
 ], CardsModule);

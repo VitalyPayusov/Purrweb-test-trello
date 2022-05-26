@@ -19,141 +19,95 @@ const jwt_guard_1 = require("../auth/guards/jwt.guard");
 const cards_entity_1 = require("./cards.entity");
 const swagger_1 = require("@nestjs/swagger");
 const cards_dto_1 = require("./dto/cards.dto");
-const acess_guard_1 = require("../auth/guards/acess.guard");
-const columns_service_1 = require("../columns/columns.service");
-const users_service_1 = require("../users/users.service");
+const decorator_1 = require("../users/decorator");
+const users_entity_1 = require("../users/users.entity");
+const update_cards_dto_1 = require("./dto/update.cards.dto");
 let CardsController = class CardsController {
-    constructor(cardsService, columnsService, usersService) {
+    constructor(cardsService) {
         this.cardsService = cardsService;
-        this.columnsService = columnsService;
-        this.usersService = usersService;
     }
-    async createCard(dto, columnId) {
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        return await this.cardsService.createCard(dto, columnId);
+    async create(dto) {
+        return this.cardsService.createCard(dto);
     }
-    async getCards(userId, columnId) {
-        const user = await this.usersService.getUser(userId);
-        if (!user) {
-            throw new common_1.BadRequestException('User not found');
-        }
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        return await this.cardsService.getCards(columnId);
+    async getCard(id) {
+        return await this.cardsService.getCard(id);
     }
-    async getCard(userId, columnId, cardId) {
-        const user = await this.userService.getUser(userId);
-        if (!user) {
-            throw new common_1.BadRequestException('User not found');
-        }
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return card;
+    async getCards(columnId, user) {
+        return this.cardsService.getCards(columnId, user === null || user === void 0 ? void 0 : user.id);
     }
-    async updateCard(columnId, cardId, dto) {
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return await this.cardsService.updateCard(dto, cardId);
+    async updateCard(id, dto) {
+        console.log(id);
+        console.log(dto);
+        return this.cardsService.updateCard(id, dto);
     }
-    async deleteCard(columnId, cardId) {
-        const column = await this.columnsService.getColumn(columnId);
-        if (!column) {
-            throw new common_1.BadRequestException('Column not found');
-        }
-        const card = await this.cardsService.getCard(cardId);
-        if (!card) {
-            throw new common_1.BadRequestException('Card not found');
-        }
-        return await this.cardsService.deleteCard(cardId);
+    async deleteCard(id) {
+        return await this.cardsService.deleteCard(id);
     }
 };
 __decorate([
-    (0, common_1.Post)('columns/:columnId/cards'),
+    (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create card' }),
     (0, swagger_1.ApiResponse)({ status: 201, type: cards_entity_1.Cards }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Param)('columnId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [cards_dto_1.CardDto, Number]),
+    __metadata("design:paramtypes", [cards_dto_1.CardDto]),
     __metadata("design:returntype", Promise)
-], CardsController.prototype, "createCard", null);
+], CardsController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(':userId/columns/:columnId/cards'),
+    (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get card' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: cards_entity_1.Cards }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('userId')),
-    __param(1, (0, common_1.Param)('columnId')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
-    __metadata("design:returntype", Promise)
-], CardsController.prototype, "getCards", null);
-__decorate([
-    (0, common_1.Get)(':userId/columns/:columnId/cards/:cardId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get cards' }),
-    (0, swagger_1.ApiResponse)({ status: 200, type: cards_entity_1.Cards }),
-    (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('userId')),
-    __param(1, (0, common_1.Param)('columnId')),
-    __param(2, (0, common_1.Param)('cardId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number, Number]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CardsController.prototype, "getCard", null);
 __decorate([
-    (0, common_1.Patch)('columns/:columnId/cards/:cardId'),
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get cards' }),
+    (0, swagger_1.ApiResponse)({ status: 200, type: cards_entity_1.Cards }),
+    (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Query)('columnId', common_1.ParseIntPipe)),
+    __param(1, (0, decorator_1.User)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, users_entity_1.Users]),
+    __metadata("design:returntype", Promise)
+], CardsController.prototype, "getCards", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Update card' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: cards_entity_1.Cards }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('columnId')),
-    __param(1, (0, common_1.Param)('cardId')),
-    __param(2, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, Object]),
+    __metadata("design:paramtypes", [Number, update_cards_dto_1.UpdateCardDto]),
     __metadata("design:returntype", Promise)
 ], CardsController.prototype, "updateCard", null);
 __decorate([
-    (0, common_1.Delete)('columns/:columnId/cards/:cardId'),
+    (0, common_1.Delete)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete card' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: cards_entity_1.Cards }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
     (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('columnId')),
-    __param(1, (0, common_1.Param)('cardId')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Number]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], CardsController.prototype, "deleteCard", null);
 CardsController = __decorate([
     (0, swagger_1.ApiTags)('Cards'),
-    (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [cards_service_1.CardsService,
-        columns_service_1.ColumnsService,
-        users_service_1.UsersService])
+    (0, common_1.Controller)('cards'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    __metadata("design:paramtypes", [cards_service_1.CardsService])
 ], CardsController);
 exports.CardsController = CardsController;
 //# sourceMappingURL=cards.controller.js.map

@@ -15,23 +15,25 @@ const class_validator_1 = require("class-validator");
 class CardDto {
 }
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Card', description: 'Card name' }),
+    (0, swagger_1.ApiProperty)({ example: 4, description: 'Parent column ID' }),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsDefined)(),
+    __metadata("design:type", Number)
+], CardDto.prototype, "columnId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: 'Name card', description: 'name' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Min)(1),
-    (0, class_validator_1.Max)(30),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.MaxLength)(20),
     __metadata("design:type", String)
 ], CardDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Card description', description: 'Card description' }),
+    (0, swagger_1.ApiProperty)({ example: 'Description card',
+        description: 'description' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Max)(300),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.MaxLength)(100),
     __metadata("design:type", String)
 ], CardDto.prototype, "description", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: 'Result', description: 'Card result' }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Max)(30),
-    __metadata("design:type", String)
-], CardDto.prototype, "result", void 0);
 exports.CardDto = CardDto;
 //# sourceMappingURL=cards.dto.js.map

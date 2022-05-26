@@ -18,37 +18,30 @@ const typeorm_1 = require("typeorm");
 const users_entity_1 = require("./users.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 let UsersService = class UsersService {
-    constructor(usersService) {
-        this.usersService = usersService;
+    constructor(usersRepository) {
+        this.usersRepository = usersRepository;
     }
     async createUser(dto) {
-        const user = this.usersService.create(dto);
-        this.usersService.save(user);
+        const user = this.usersRepository.create(dto);
+        await this.usersRepository.save(user);
         return await this.userEmail(user.email);
     }
     async getUser(id) {
-        try {
-            return await this.usersService.findOne(id);
-        }
-        catch (e) {
-            throw new common_1.BadRequestException('User not found');
-        }
+        const user = await this.usersRepository.findOne(id);
+        return user;
     }
     getUsers() {
-        return this.usersService.find();
+        return this.usersRepository.find();
     }
     async updateUser(id, dto) {
         const user = await this.getUser(id);
-        return await this.usersService.save(Object.assign(Object.assign({}, user), { dto }));
+        return this.usersRepository.save(Object.assign(Object.assign({}, user), dto));
     }
     async deleteUser(id) {
-        return await this.usersService.remove(await this.usersService.findOne(id));
-    }
-    findOne(condition) {
-        return this.usersService.findOne(condition);
+        return await this.usersRepository.remove(await this.usersRepository.findOne(id));
     }
     async userEmail(email) {
-        return await this.usersService.findOne({ where: { email } });
+        return await this.usersRepository.findOne({ where: { email } });
     }
 };
 UsersService = __decorate([

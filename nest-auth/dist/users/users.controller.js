@@ -19,7 +19,6 @@ const jwt_guard_1 = require("../auth/guards/jwt.guard");
 const users_entity_1 = require("./users.entity");
 const swagger_1 = require("@nestjs/swagger");
 const users_dto_1 = require("./dto/users.dto");
-const acess_guard_1 = require("../auth/guards/acess.guard");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -44,7 +43,7 @@ __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create user' }),
     (0, swagger_1.ApiResponse)({ status: 201, type: users_entity_1.Users }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [users_dto_1.UserDto]),
@@ -55,17 +54,17 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get user' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: users_entity_1.Users }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)(':id')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "getUser", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all users' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: users_entity_1.Users }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -75,11 +74,11 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update user' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: users_entity_1.Users }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, users_dto_1.UserDto]),
+    __metadata("design:paramtypes", [Number, users_dto_1.UserDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "updateUser", null);
 __decorate([
@@ -87,7 +86,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Delete user' }),
     (0, swagger_1.ApiResponse)({ status: 200, type: users_entity_1.Users }),
     (0, swagger_1.ApiNotFoundResponse)({ description: 'Not found' }),
-    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard, acess_guard_1.AccessGuard),
+    (0, common_1.UseGuards)(jwt_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
@@ -96,6 +95,7 @@ __decorate([
 UsersController = __decorate([
     (0, swagger_1.ApiTags)('Users'),
     (0, common_1.Controller)('users'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 exports.UsersController = UsersController;

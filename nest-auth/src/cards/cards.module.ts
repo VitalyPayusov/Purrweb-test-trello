@@ -1,21 +1,19 @@
-import {Global, Module} from "@nestjs/common";
+import {Module} from "@nestjs/common";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { AuthModule } from "src/auth/auth.module";
-import { ColumnsModule } from "src/columns/columns.module";
-import { UsersModule } from "src/users/users.module";
 import {CardsController} from "./cards.controller";
 import {Cards} from "./cards.entity";
 import {CardsService} from "./cards.service";
+import {Columns} from "../columns/columns.entity";
+import {IsCardOwnerGuard} from "./is-card-owner.guard";
 
 @Module({
   imports: [
-    UsersModule,
-    ColumnsModule,
     AuthModule,
-    TypeOrmModule.forFeature([Cards]),
+    TypeOrmModule.forFeature([Cards, Columns]),
   ],
   controllers: [CardsController],
-  providers: [CardsService],
+  providers: [CardsService, IsCardOwnerGuard],
   exports: [CardsService]
 })
 export class CardsModule {}

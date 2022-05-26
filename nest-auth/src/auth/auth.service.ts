@@ -12,7 +12,7 @@ export class AuthService {
   }
 
   async signUp(dto: SignInUserDto) {
-    const userAlreadyExist = await this.usersService.findOne(dto.email);
+    const userAlreadyExist = await this.usersService.getUser(dto.email);
 
     if (userAlreadyExist) {
         throw new BadRequestException('Email already exists');
@@ -24,20 +24,23 @@ export class AuthService {
 
   async validateUser(dto: SignInUserDto): Promise<Users> {
     const user = await this.usersService.userEmail(dto.email);
-    if (user && await bcrypt.compare(dto.password, user.email)) {
+
+    if (user && await bcrypt.compare(dto.password, user.password)) {
       const { password, ...result } = user;
       return result;
     }
+
     return null;
   }
 
   async login(dto: SignInUserDto) {
     const user = await this.validateUser(dto)
+
     return this.token(user)
 }
 
   async token(user: Users) {
-    const payload = { email: user.email, password: user.password };
+    const payload = { email: user.email, id: user.id };
 
     return {
       access_token: this.jwtService.sign(payload),

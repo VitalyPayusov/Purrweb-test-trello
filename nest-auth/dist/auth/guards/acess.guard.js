@@ -19,7 +19,7 @@ let AccessGuard = class AccessGuard {
     canActivate(context) {
         const req = context.switchToHttp().getRequest();
         try {
-            const requestUserId = Number(req.params['id']);
+            const requestUserId = Number(req.params['userId']);
             const token = req.headers.authorization.split(' ')[1];
             const tokenUserId = this.jwtService.decode(token)['id'];
             if (tokenUserId === requestUserId) {

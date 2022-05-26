@@ -1,19 +1,18 @@
 import {Module} from "@nestjs/common";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { AuthModule } from "src/auth/auth.module";
-import { UsersModule } from "src/users/users.module";
 import {ColumnsController} from "./columns.controller";
 import {Columns} from "./columns.entity";
 import {ColumnsService} from "./columns.service";
+import {IsColumnOwnerGuard} from "./is-column-owner.guard";
 
 @Module({
   imports: [
-    UsersModule,
     AuthModule,
     TypeOrmModule.forFeature([Columns]),
   ],
   controllers: [ColumnsController],
-  providers: [ColumnsService],
+  providers: [ColumnsService, IsColumnOwnerGuard],
   exports: [ColumnsService]
 })
 export class ColumnsModule {}

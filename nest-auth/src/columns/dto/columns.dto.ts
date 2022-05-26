@@ -1,15 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, Max, Min } from "class-validator";
+import { IsString, MaxLength, IsNotEmpty, IsOptional } from "class-validator";
 
 export class ColumnDto{
-    @ApiProperty({example: 'Column', description: 'Column name'})
+    @ApiProperty({example: 'Name column', description: 'name'})
     @IsString()
-    @Min(1)
-    @Max(30)
-    name: string;
+    @IsNotEmpty()
+    @MaxLength(20)
+    readonly name: string;
 
-    @ApiProperty({example: 'Column description', description: 'Column description'})
+    @ApiProperty(
+        {example: 'Description column',
+        description: 'description'}
+     )
     @IsString()
-    @Max(300)
-    description: string;
+    @IsOptional()
+    @MaxLength(100)
+    readonly description?: string;
 }

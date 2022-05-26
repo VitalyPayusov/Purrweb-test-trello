@@ -1,110 +1,77 @@
-import {Controller, UseGuards, Get, Param, ParseIntPipe, Post, Body, Patch, Delete, BadRequestException} from "@nestjs/common";
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Body,
+  Patch,
+  Delete,
+  Query
+} from "@nestjs/common";
 import {CardsService} from "./cards.service";
 import {JwtAuthGuard} from "../auth/guards/jwt.guard";
 import {Cards} from "./cards.entity";
-import {ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { CardDto } from "./dto/cards.dto";
-import { AccessGuard } from "src/auth/guards/acess.guard";
-import { ColumnsService } from "src/columns/columns.service";
-import { UsersService } from "src/users/users.service";
+import {User} from "../users/decorator";
+import {Users} from "../users/users.entity";
+import { UpdateCardDto } from "./dto/update.cards.dto";
 
 @ApiTags('Cards')
-@Controller('users')
+@Controller('cards')
+@ApiBearerAuth('access_token')
 export class CardsController {
-  columnService: any;
-  userService: any;
-  constructor(private readonly cardsService: CardsService, 
-    private columnsService: ColumnsService,
-    private usersService: UsersService) {
+  constructor(private readonly cardsService: CardsService) {
   }
 
-  @Post('columns/:columnId/cards')
+  @Post()
   @ApiOperation({summary: 'Create card'})
   @ApiResponse({status: 201, type: Cards})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async createCard(@Body() dto: CardDto, @Param('columnId') columnId: number){
-    const column = await this.columnsService.getColumn(columnId);
-    if ( !column ){
-        throw new BadRequestException('Column not found');
-    }
-    return await this.cardsService.createCard(dto, columnId);
-}
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() dto: CardDto) {
+    return this.cardsService.createCard(dto);
+  }
 
-  @Get(':userId/columns/:columnId/cards')
+  @Get(':id')
   @ApiOperation({summary: 'Get card'})
   @ApiResponse({status: 200, type: Cards})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async getCards(@Param('userId') userId: number, @Param('columnId') columnId: number){
-    const user = await this.usersService.getUser(userId);
-    if( !user ){
-        throw new BadRequestException('User not found');
-    }
-    const column = await this.columnsService.getColumn(columnId);
-    if( !column ){
-        throw new BadRequestException('Column not found');
-    }
-    return await this.cardsService.getCards(columnId);
-}
+  @UseGuards(JwtAuthGuard)
+  async getCard(@Param('id', ParseIntPipe) id: number) {
+    return await this.cardsService.getCard(id);
+  }
 
-  @Get(':userId/columns/:columnId/cards/:cardId')
+  @Get()
   @ApiOperation({summary: 'Get cards'})
   @ApiResponse({status: 200, type: Cards})
   @ApiNotFoundResponse({description: 'Not found'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async getCard(@Param('userId') userId: number, @Param('columnId') columnId: number, @Param('cardId') cardId: number){
-    const user = await this.userService.getUser(userId);
-    if( !user ){
-        throw new BadRequestException('User not found');
-    }
+  @UseGuards(JwtAuthGuard)
+  async getCards(@Query('columnId', ParseIntPipe) columnId?: number, @User() user?: Users) {
+    return this.cardsService.getCards(columnId, user?.id);
+  }
 
-    const column = await this.columnsService.getColumn(columnId);
-    if( !column ){
-        throw new BadRequestException('Column not found');
-    }
-
-    const card = await this.cardsService.getCard(cardId);
-    if ( !card ){
-        throw new BadRequestException('Card not found');
-    }
-
-    return card;
-}
-    
-  @Patch('columns/:columnId/cards/:cardId')
+  @Patch(':id')
   @ApiOperation({summary: 'Update card'})
   @ApiResponse({status: 200, type: Cards})
   @ApiNotFoundResponse({description: 'Not found'})
   @ApiForbiddenResponse({description: 'Forbidden'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async updateCard(@Param('columnId') columnId: number, @Param('cardId') cardId: number | any, @Body() dto: CardDto | any){
-    const column = await this.columnsService.getColumn(columnId);
-    if ( !column ){
-        throw new BadRequestException('Column not found');
-    }
-    const card = await this.cardsService.getCard(cardId);
-    if ( !card ){
-        throw new BadRequestException('Card not found');
-    }
-    return await this.cardsService.updateCard(dto, cardId);
-}
-    
-  @Delete('columns/:columnId/cards/:cardId')
+  @UseGuards(JwtAuthGuard)
+  async updateCard(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateCardDto) {
+    console.log(id)
+    console.log(dto)
+    return this.cardsService.updateCard(id, dto);
+  }
+
+  @Delete(':id')
   @ApiOperation({summary: 'Delete card'})
   @ApiResponse({status: 200, type: Cards})
   @ApiNotFoundResponse({description: 'Not found'})
   @ApiForbiddenResponse({description: 'Forbidden'})
-  @UseGuards(JwtAuthGuard, AccessGuard)
-  async deleteCard(@Param('columnId') columnId: number, @Param('cardId') cardId: number) {
-    const column = await this.columnsService.getColumn(columnId);
-    if ( !column ){
-        throw new BadRequestException('Column not found');
-    }
-    const card = await this.cardsService.getCard(cardId);
-    if ( !card ){
-        throw new BadRequestException('Card not found');
-    }
-    return await this.cardsService.deleteCard(cardId); 
-}
+  @UseGuards(JwtAuthGuard)
+  async deleteCard(@Param('id', ParseIntPipe) id: number) {
+    return await this.cardsService.deleteCard(id);
+  }
 }

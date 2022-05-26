@@ -1,4 +1,4 @@
-import {Global, Module} from "@nestjs/common";
+import {Module} from "@nestjs/common";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { AuthModule } from "src/auth/auth.module";
 import { CardsModule } from "src/cards/cards.module";

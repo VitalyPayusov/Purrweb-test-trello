@@ -1,4 +1,5 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import { Comments } from "src/comments/comments.entity";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Columns} from "../columns/columns.entity";
 
 @Entity('cards')
@@ -9,6 +10,13 @@ export class Cards {
     @Column({unique: true})
     name: string;
 
-    @OneToMany((type) => Columns, (columns) => columns.id)
-    parent: Columns;
+    @ManyToOne(type => Columns, column => column.id)
+    @JoinColumn()
+    column: Columns;
+
+    @Column()
+    columnId: number;
+
+    @OneToMany(type => Comments, comment => comment.cardId)
+    comment: Comments[];
 }

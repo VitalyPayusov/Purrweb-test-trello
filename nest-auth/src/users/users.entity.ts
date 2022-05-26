@@ -1,6 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString, Length } from "class-validator";
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Columns } from "src/columns/columns.entity";
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 
 @Entity('Users')
 export class Users {
@@ -8,9 +7,12 @@ export class Users {
     id: number;
 
     @Column({unique: true})
-   
+
     email: string;
 
     @Column()
     password?: string;
+
+    @OneToMany(type => Columns, column => column.userId)
+    column: Columns[];
 }

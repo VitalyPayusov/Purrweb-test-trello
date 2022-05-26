@@ -1,5 +1,5 @@
-import {forwardRef, Global, Module} from "@nestjs/common";
-import {JwtModule, JwtService} from "@nestjs/jwt";
+import {forwardRef, Module} from "@nestjs/common";
+import {JwtModule} from "@nestjs/jwt";
 import {UsersModule} from "../users/users.module";
 import {AuthService} from "./auth.service";
 import {LocalStrategy} from "./strategies/local.strategy";
@@ -10,6 +10,7 @@ import { PassportModule } from "@nestjs/passport";
 import { jwtConstants } from "./constants";
 import { AuthController } from "./auth.controller";
 import { AccessGuard } from "./guards/acess.guard";
+
 
 @Module({
   imports: [

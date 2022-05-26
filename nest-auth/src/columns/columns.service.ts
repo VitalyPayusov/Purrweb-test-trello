@@ -2,49 +2,50 @@ import {BadRequestException, Injectable} from "@nestjs/common";
 import {Repository} from "typeorm";
 import {Columns} from "./columns.entity";
 import {InjectRepository} from "@nestjs/typeorm";
-import {UsersService} from "src/users/users.service";
-import { ColumnDto } from "src/columns/dto/columns.dto";
+import {ColumnDto} from "src/columns/dto/columns.dto";
 
 @Injectable()
 export class ColumnsService {
-  constructor(@InjectRepository(Columns) private readonly columnsService: Repository<Columns>, 
-  private usersService: UsersService) {
+  constructor(@InjectRepository(Columns) private readonly columnsRepository: Repository<Columns>) {
   }
 
-  async createColumn(dto: ColumnDto, userId: any) {
+  async createColumn(userId: number, dto: ColumnDto) {
     const obj = {
-        name: dto.name,
-        description: dto.description,
-        userId: userId,
+      name: dto.name,
+      userId,
     }
-    const column = this.columnsService.create(obj);
+
+    const column = this.columnsRepository.create(obj);
+    await this.columnsRepository.save(column);
     return column;
-}
+  }
 
   async getColumn(id: number): Promise<Columns> {
     try {
-      const column = this.columnsService.findOne({where: {columnId: id}});
-      return column
-    } catch(e) {
-    throw new BadRequestException('Column not found')
-  }
+      const column = await this.columnsRepository.findOne({where: {id: id}});
+      return column;
+    } catch (e) {
+      throw new BadRequestException('Column not found')
+    }
   }
 
   async getColumns(userId: number): Promise<Columns[]> {
     try {
-      const columns = await this.columnsService.find({ where: { userId : userId } });
+      const columns = await this.columnsRepository.find({where: {userId: userId}});
       return columns;
-    } catch(e) {
+    } catch (e) {
       throw new BadRequestException('Columns not found')
     }
   }
 
-  async updateColumn(id: any, dto: ColumnDto): Promise<Columns> {
-    return await this.columnsService.save({...dto, ...{where: {columnId: id}}});
+  async updateColumn(id: number, dto: ColumnDto): Promise<Columns> {
+    const column = await this.getColumn(id);
+    return this.columnsRepository.save({...column, ...dto});
   }
 
   async deleteColumn(id: number): Promise<Columns> {
-    return await this.columnsService.remove(await this.columnsService.findOne(id));
+    const column = await this.getColumn(id);
+    return await this.columnsRepository.remove(column);
   }
 
 }

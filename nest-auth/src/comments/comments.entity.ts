@@ -1,5 +1,5 @@
 import { MaxLength } from "class-validator";
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {Cards} from "../cards/cards.entity";
 
 @Entity('comments')
@@ -11,6 +11,10 @@ export class Comments {
     @MaxLength(300)
     text: string;
 
-    @OneToMany((type) => Cards, (cards) => cards.id)
-    parent: Cards;
+    @ManyToOne(type => Cards, card => card.id)
+    @JoinColumn()
+    card: Cards;
+
+    @Column()
+    cardId: number;
 }

@@ -31,7 +31,7 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async signUp(dto) {
-        const userAlreadyExist = await this.usersService.findOne(dto.email);
+        const userAlreadyExist = await this.usersService.getUser(dto.email);
         if (userAlreadyExist) {
             throw new common_1.BadRequestException('Email already exists');
         }
@@ -41,7 +41,7 @@ let AuthService = class AuthService {
     }
     async validateUser(dto) {
         const user = await this.usersService.userEmail(dto.email);
-        if (user && await bcrypt.compare(dto.password, user.email)) {
+        if (user && await bcrypt.compare(dto.password, user.password)) {
             const { password } = user, result = __rest(user, ["password"]);
             return result;
         }
@@ -52,7 +52,7 @@ let AuthService = class AuthService {
         return this.token(user);
     }
     async token(user) {
-        const payload = { email: user.email, password: user.password };
+        const payload = { email: user.email, id: user.id };
         return {
             access_token: this.jwtService.sign(payload),
         };
